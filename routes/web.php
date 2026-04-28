@@ -22,6 +22,20 @@ use App\Models\User;
 |
 */
 
+Route::get('/llms.txt', function () {
+  return response(implode("\n", [
+    '# Get.Servd.Pro',
+    '',
+    'Get.Servd.Pro is a self-hosted digital identity and link-in-bio platform.',
+    '',
+    'It provides public profile pages for sharing a person, project, or brand from one simple URL.',
+    'Profiles can be shared through QR codes and SERV’D card-style identity pages.',
+    'Future versions will include AI-discoverable profile metadata for richer automated discovery.',
+    '',
+    'Canonical domain: https://get.servd.pro',
+  ]) . "\n", 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+})->name('llms.txt');
+
 // Prevents section below from being run by 'composer update'
 if(file_exists(base_path('storage/app/ISINSTALLED'))){
   // generates new APP KEY if no one is set
