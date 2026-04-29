@@ -23,17 +23,34 @@ use App\Models\User;
 */
 
 Route::get('/llms.txt', function () {
-  return response(implode("\n", [
-    '# Get.Servd.Pro',
+  $platformName = 'Get.Servd.Pro';
+  $platformDescription = 'Get.Servd.Pro is a self-hosted digital identity and link-in-bio platform.';
+
+  $users = User::query()
+    ->select(['name', 'bio'])
+    ->latest()
+    ->limit(10)
+    ->get();
+
+  $lines = [
+    '# PLATFORM',
+    'name: ' . $platformName,
+    'description: ' . $platformDescription,
     '',
-    'Get.Servd.Pro is a self-hosted digital identity and link-in-bio platform.',
-    '',
-    'It provides public profile pages for sharing a person, project, or brand from one simple URL.',
-    'Profiles can be shared through QR codes and SERV’D card-style identity pages.',
-    'Future versions will include AI-discoverable profile metadata for richer automated discovery.',
-    '',
-    'Canonical domain: https://get.servd.pro',
-  ]) . "\n", 200)->header('Content-Type', 'text/plain; charset=UTF-8');
+    '# USERS',
+  ];
+
+  foreach ($users as $user) {
+    $lines[] = '- name: ' . trim((string) $user->name);
+
+    if (!is_null($user->bio) && trim((string) $user->bio) !== '') {
+      $bio = str_replace(["\r", "\n"], ' ', trim((string) $user->bio));
+      $lines[] = '  bio: ' . mb_substr($bio, 0, 280);
+    }
+  }
+
+  return response(implode("\n", $lines) . "\n", 200)
+    ->header('Content-Type', 'text/plain; charset=UTF-8');
 })->name('llms.txt');
 
 // Prevents section below from being run by 'composer update'
